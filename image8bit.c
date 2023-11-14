@@ -172,6 +172,23 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
   assert (height >= 0);
   assert (0 < maxval && maxval <= PixMax);
   // Insert your code here!
+  
+  // Allocate image
+  struct image *img = (struct image *) malloc(sizeof(struct image));
+  
+  size_t size = width*height*sizeof(uint8);
+
+  if(img == NULL){
+    errno = ENOMEM;
+    return NULL;
+  }
+
+  img->width = width;
+  img->height = height;
+  img->pixel = (uint8 *) malloc(size);
+  img->maxval = maxval;
+
+  return img;
 }
 
 /// Destroy the image pointed to by (*imgp).
@@ -182,6 +199,8 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 void ImageDestroy(Image* imgp) { ///
   assert (imgp != NULL);
   // Insert your code here!
+  free(*imgp);
+  *imgp = NULL;
 }
 
 
@@ -294,6 +313,21 @@ int ImageMaxval(Image img) { ///
 void ImageStats(Image img, uint8* min, uint8* max) { ///
   assert (img != NULL);
   // Insert your code here!
+  for (int i = 0; i < img->height; i++)
+  {
+    for (int j = 0; j < img->width; j++)
+    {
+      if (img->pixel[i*img->width + j] < *min)
+      {
+        *min = img->pixel[i*img->width + j];
+      }
+      if (img->pixel[i*img->width + j] > *max)
+      {
+        *max = img->pixel[i*img->width + j];
+      }
+    }
+  }
+  
 }
 
 /// Check if pixel position (x,y) is inside img.
