@@ -170,6 +170,8 @@ void ImageInit(void) { ///
 Image ImageCreate(int width, int height, uint8 maxval) { ///
   assert (width >= 0);
   assert (height >= 0);
+  assert (width < 100);
+  assert (height < 100);
   assert (0 < maxval && maxval <= PixMax);
   // Insert your code here!
   
@@ -313,21 +315,16 @@ int ImageMaxval(Image img) { ///
 void ImageStats(Image img, uint8* min, uint8* max) { ///
   assert (img != NULL);
   // Insert your code here!
-  for (int i = 0; i < img->height; i++)
-  {
-    for (int j = 0; j < img->width; j++)
-    {
-      if (img->pixel[i*img->width + j] < *min)
-      {
+  for (int i = 0; i < img->height; i++) {
+    for (int j = 0; j < img->width; j++) {
+      if (img->pixel[i*img->width + j] < *min) {
         *min = img->pixel[i*img->width + j];
       }
-      if (img->pixel[i*img->width + j] > *max)
-      {
+      if (img->pixel[i*img->width + j] > *max) {
         *max = img->pixel[i*img->width + j];
       }
     }
   }
-  
 }
 
 /// Check if pixel position (x,y) is inside img.
@@ -501,7 +498,11 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
-  // Insert your code here!
+  // Insert your code here!  
+  if (img1->pixel[y*100+x] == img2->pixel[y*100+x]) {
+    return 1;
+  }
+  return 0;
 }
 
 /// Locate a subimage inside another image.
