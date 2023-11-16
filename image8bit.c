@@ -170,8 +170,6 @@ void ImageInit(void) { ///
 Image ImageCreate(int width, int height, uint8 maxval) { ///
   assert (width >= 0);
   assert (height >= 0);
-  assert (width < 100);
-  assert (height < 100);
   assert (0 < maxval && maxval <= PixMax);
   // Insert your code here!
   
