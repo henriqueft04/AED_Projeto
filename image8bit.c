@@ -170,6 +170,8 @@ void ImageInit(void) { ///
 Image ImageCreate(int width, int height, uint8 maxval) { ///
   assert (width >= 0);
   assert (height >= 0);
+  assert (width < 100);
+  assert (height < 100);
   assert (0 < maxval && maxval <= PixMax);
   // Insert your code here!
   
@@ -351,7 +353,6 @@ static inline int G(Image img, int x, int y) {
   int index;
   // Insert your code here!
   assert (0 <= index && index < img->width*img->height);
-  index = y*img->width + x;
   return index;
 }
 
@@ -371,7 +372,6 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
   img->pixel[G(img, x, y)] = level;
 } 
 
-
 /// Pixel transformations
 
 /// These functions modify the pixel levels in an image, but do not change
@@ -385,7 +385,14 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 /// resulting in a "photographic negative" effect.
 void ImageNegative(Image img) { ///
   assert (img != NULL);
-  // Insert your code here!
+  for (int i = 0; i < img->height; i++)
+  {
+    for (int j = 0; j < img->width; j++)
+    {
+      int color = img->pixel[i,j];
+      img->pixel[i,j] = img->maxval - color;
+    }
+  }
 }
 
 /// Apply threshold to image.
@@ -393,19 +400,48 @@ void ImageNegative(Image img) { ///
 /// all pixels with level>=thr to white (maxval).
 void ImageThreshold(Image img, uint8 thr) { ///
   assert (img != NULL);
-  // Insert your code here!
-}
 
+  for (int i = 0; i < sizeof(img->pixel); i++)
+  {
+    if (img->pixel[i] < thr)
+    {
+      img->pixel[i] = 0;
+    }
+    else
+    {
+      img->pixel[i] = img->maxval;
+    }
+  }
+}
 /// Brighten image by a factor.
 /// Multiply each pixel level by a factor, but saturate at maxval.
 /// This will brighten the image if factor>1.0 and
 /// darken the image if factor<1.0.
 void ImageBrighten(Image img, double factor) { ///
   assert (img != NULL);
-  // ? assert (factor >= 0.0);
-  // Insert your code here!
+  while(factor > 1.0 || factor < 1.0)
+  {
+    for (int i = 0; i < sizeof(img->pixel); i++)
+    {
+      if (factor > 1.0)
+      {
+        img->pixel[i] = img->pixel[i] * factor;
+        if (img->pixel[i] > img->maxval)
+        {
+          img->pixel[i] = img->maxval;
+        }
+      }
+      else
+      {
+        img->pixel[i] = img->pixel[i] * factor;
+        if (img->pixel[i] < 0)
+        {
+          img->pixel[i] = 0;
+        }
+      }
+    }
+  }
 }
-
 
 /// Geometric transformations
 
@@ -497,19 +533,9 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
-  // Insert your code here!
-  if (img1->pixel[G(img1,x,y)] == img2->pixel[0]) {
-    int indice0 = G(img1,x,y);
-    if (ImageValidRect(img1, x, y, img2->width, img2->height)) {
-      for (int i = 0; i < img2->height; i++) {
-        for (int j = 0; j < img2->width; j++) {
-          if (img1->pixel[G(img1,x+j,y+i)] != img2->pixel[G(img2, j, i)]) {
-            return 0;
-          }
-        }
-      }
-      return 1;
-    } 
+  // Insert your code here!  
+  if (img1->pixel[y*100+x] == img2->pixel[y*100+x]) {
+    return 1;
   }
   return 0;
 }
@@ -522,16 +548,6 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   // Insert your code here!
-  for (int i = 0; i < img1->height; i++) {
-    for (size_t j = 0; j < img1->width; j++) {
-      if(ImageMatchSubImage(img1, j, i, img2)) {
-        *px = j;
-        *py = i;
-        return 1;
-      }
-    }
-  }
-  return 0;
 }
 
 

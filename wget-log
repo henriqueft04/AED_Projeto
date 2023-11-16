@@ -1,0 +1,16 @@
+--2023-11-15 23:47:20--  https://sweet.ua.pt/jmr/aed/pgm.tgz
+Resolving sweet.ua.pt (sweet.ua.pt)... 193.136.173.58
+Connecting to sweet.ua.pt (sweet.ua.pt)|193.136.173.58|:443... connected.
+HTTP request sent, awaiting response... Read error (Connection timed out) in headers.
+Retrying.
+
+--2023-11-16 00:02:21--  (try: 2)  https://sweet.ua.pt/jmr/aed/pgm.tgz
+Connecting to sweet.ua.pt (sweet.ua.pt)|193.136.173.58|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 5452315 (5,2M) [application/x-compressed]
+Saving to: ‘STDOUT’
+
+     0K                                                         0% 0,00 =0s
+
+
+Cannot write to ‘-’ (Success).

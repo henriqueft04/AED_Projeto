@@ -389,7 +389,14 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 /// resulting in a "photographic negative" effect.
 void ImageNegative(Image img) { ///
   assert (img != NULL);
-  
+  for (int i = 0; i < img->height; i++)
+  {
+    for (int j = 0; j < img->width; j++)
+    {
+      int color = img->pixel[i,j];
+      img->pixel[i,j] = img->maxval - color;
+    }
+  }
 }
 
 /// Apply threshold to image.
@@ -397,7 +404,18 @@ void ImageNegative(Image img) { ///
 /// all pixels with level>=thr to white (maxval).
 void ImageThreshold(Image img, uint8 thr) { ///
   assert (img != NULL);
-  // Insert your code here!
+
+  for (int i = 0; i < sizeof(img->pixel); i++)
+  {
+    if (img->pixel[i] < thr)
+    {
+      img->pixel[i] = 0;
+    }
+    else
+    {
+      img->pixel[i] = img->maxval;
+    }
+  }
 }
 
 /// Brighten image by a factor.
@@ -406,8 +424,28 @@ void ImageThreshold(Image img, uint8 thr) { ///
 /// darken the image if factor<1.0.
 void ImageBrighten(Image img, double factor) { ///
   assert (img != NULL);
-  // ? assert (factor >= 0.0);
-  // Insert your code here!
+  while(factor > 1.0 || factor < 1.0)
+  {
+    for (int i = 0; i < sizeof(img->pixel); i++)
+    {
+      if (factor > 1.0)
+      {
+        img->pixel[i] = img->pixel[i] * factor;
+        if (img->pixel[i] > img->maxval)
+        {
+          img->pixel[i] = img->maxval;
+        }
+      }
+      else
+      {
+        img->pixel[i] = img->pixel[i] * factor;
+        if (img->pixel[i] < 0)
+        {
+          img->pixel[i] = 0;
+        }
+      }
+    }
+  }
 }
 
 
