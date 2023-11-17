@@ -386,7 +386,7 @@ void ImageNegative(Image img) { ///
   for (int i = 0; i < img->height; i++) {
     for (int j = 0; j < img->width; j++) {
       int color = img->pixel[G(img,j,i)];
-      img->pixel[G(img,j,i)] = img->maxval - color;
+      img->pixel[G(img,j,i)] = ImageMaxval(img) - color;
     }
   }
 }
@@ -474,7 +474,13 @@ Image ImageRotate(Image img) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageMirror(Image img) { ///
   assert (img != NULL);
-  // Insert your code here!
+  Image img2 = ImageCreate(img->width, img->height, img->maxval);
+  for (int i = 0; i < img->height; i++) {
+    for (int j = 0; j < img->width; j++) {
+      img2->pixel[G(img2, j, i)] = img->pixel[G(img, img->width - j - 1, i)];
+    }
+  }
+  return img2;
 }
 
 /// Crop a rectangular subimage from img.
