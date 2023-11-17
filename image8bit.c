@@ -198,7 +198,6 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 /// Should never fail, and should preserve global errno/errCause.
 void ImageDestroy(Image* imgp) { ///
   assert (imgp != NULL);
-  // Insert your code here!
   free(*imgp);
   *imgp = NULL;
 }
@@ -462,7 +461,13 @@ void ImageBrighten(Image img, double factor) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageRotate(Image img) { ///
   assert (img != NULL);
-  // Insert your code here!
+  Image img2 = ImageCreate(img->height, img->width, img->maxval);
+  for (int i = 0; i < img->height; i++) {
+    for (int j = 0; j < img->width; j++) {
+      img2->pixel[G(img2, i, img->width - j - 1)] = img->pixel[G(img, j, i)];
+    }
+  }
+  return img2;
 }
 
 /// Mirror an image = flip left-right.
@@ -512,7 +517,6 @@ void ImagePaste(Image img1, int x, int y, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));
-  // Insert your code here!
   for (int i = 0; i < img2->height; i++) {
     for (int j = 0; j < img2->width; j++) {
       img1->pixel[G(img1, x+j, y+i)] = img2->pixel[G(img2, j, i)];
