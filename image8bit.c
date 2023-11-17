@@ -531,11 +531,17 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
-  // Insert your code here!  
-  if (img1->pixel[y*100+x] == img2->pixel[y*100+x]) {
+  assert (ImageValidRect(img1, x, y, img2->width, img2->height));
+  if (img1->pixel[G(img1,x,y)] == img2->pixel[0]) {
+    for (int i = 0; i < img2->height; i++) {
+      for (int j = 0; j < img2->width; j++) {
+        if (img1->pixel[G(img1,x+j,y+i)] != img2->pixel[G(img2, j, i)]) {
+          return 0;
+        }
+      }
+    }
     return 1;
   }
-  return 0;
 }
 
 /// Locate a subimage inside another image.
@@ -545,7 +551,20 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
 int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
-  // Insert your code here!
+  // TODO: usar validrect para acabar loop antes
+  for (int i = 0; i < img1->height; i++) {
+    for (int j = 0; j < img1->width; j++) {
+      if (img1->pixel[G(img1, j, i)] == img2->pixel[0]) {
+        if (ImageMatchSubImage(img1, j, i, img2)) {
+          *px = j;
+          *py = i;
+          return 1;
+        }
+        continue;
+      }
+    }
+  }
+  return 0;
 }
 
 
