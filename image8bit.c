@@ -589,5 +589,37 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy) { ///
-  // Insert your code here!
+  assert (img != NULL);
+  assert (dx >= 0 && dy >= 0);
+  int numPixels;
+  int sum;
+  int lastX;
+  int lastY;
+
+  for (int i = 0; i < img->height; i+=2*dy) {
+    for (int j = 0; j < img->width; j+=2*dx) {
+      if (ImageValidRect(img, j, i, 2*dx+1, 2*dy+1)) {
+        lastX = 2*dx+1;
+        lastY = 2*dy+1;
+      }
+      else {
+        lastX = img->width - j - 1; 
+        lastY = img->height - i - 1;
+      }
+      numPixels = 0;
+      for (int k = 0; k <= lastY - 1; k++) {
+        for (int l = 0; l <= lastX - 1; l++) {
+          numPixels++;
+          sum += img->pixel[G(img, j+l, i+k)];
+        }
+      }
+      int color = (uint8)(sum/numPixels + 0.5);
+      //TODO MUDAR ESTA MERDA
+      for (int k = 0; k <= lastY - 1; k++) {
+        for (int l = 0; l <= lastX - 1; l++) {
+          img->pixel[G(img, j+l, i+k)] = color;
+        }
+      }
+    }  
+  }
 }
