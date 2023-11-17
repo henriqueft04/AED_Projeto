@@ -513,6 +513,11 @@ void ImagePaste(Image img1, int x, int y, Image img2) { ///
   assert (img2 != NULL);
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));
   // Insert your code here!
+  for (int i = 0; i < img2->height; i++) {
+    for (int j = 0; j < img2->width; j++) {
+      img1->pixel[G(img1, x+j, y+i)] = img2->pixel[G(img2, j, i)];
+    }
+  }
 }
 
 /// Blend an image into a larger image.
