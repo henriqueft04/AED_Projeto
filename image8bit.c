@@ -395,15 +395,12 @@ void ImageNegative(Image img) { ///
 /// all pixels with level>=thr to white (maxval).
 void ImageThreshold(Image img, uint8 thr) { ///
   assert (img != NULL);
-
-  for (int i = 0; i < sizeof(img->pixel); i++)
-  {
-    if (img->pixel[i] < thr)
-    {
+  int numPixels = img->width * img->height;
+  for (int i = 0; i < numPixels; i++) {
+    if (img->pixel[i] < thr) {
       img->pixel[i] = 0;
     }
-    else
-    {
+    else {
       img->pixel[i] = img->maxval;
     }
   }
@@ -412,32 +409,23 @@ void ImageThreshold(Image img, uint8 thr) { ///
 /// Multiply each pixel level by a factor, but saturate at maxval.
 /// This will brighten the image if factor>1.0 and
 /// darken the image if factor<1.0.
-void ImageBrighten(Image img, double factor) { ///
-  assert (img != NULL);
-  while(factor > 1.0 || factor < 1.0)
-  {
-    for (int i = 0; i < sizeof(img->pixel); i++)
-    {
-      if (factor > 1.0)
-      {
-        img->pixel[i] = img->pixel[i] * factor;
-        if (img->pixel[i] > img->maxval)
-        {
+void ImageBrighten(Image img, double factor) {
+    assert(img != NULL && img->pixel != NULL);
+
+    int numPixels = img->width * img->height;
+    for (int i = 0; i < numPixels; i++) {
+      double newPixelValue = (double)img->pixel[i] * factor;
+
+      // Clamping the value to the valid range
+      if (newPixelValue > (double)img->maxval) {
           img->pixel[i] = img->maxval;
-        }
-      }
-      else
-      {
-        img->pixel[i] = img->pixel[i] * factor;
-        if (img->pixel[i] < 0)
-        {
+      } else if (newPixelValue < 0.0) {
           img->pixel[i] = 0;
-        }
+      } else {
+          img->pixel[i] = (int)(newPixelValue + 0.5);
       }
     }
-  }
 }
-
 /// Geometric transformations
 
 /// These functions apply geometric transformations to an image,
