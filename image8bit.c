@@ -500,13 +500,19 @@ Image ImageMirror(Image img) { ///
 /// On success, a new image is returned.
 /// (The caller is responsible for destroying the returned image!)
 /// On failure, returns NULL and errno/errCause are set accordingly.
+
 Image ImageCrop(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
   assert (ImageValidRect(img, x, y, w, h));
   // Insert your code here!
+  Image img2 = ImageCreate(w, h, img->maxval);
+  for (int i = 0; i < img2->height; i++) {
+    for (int j = 0; j < img2->width; j++) {
+      img2->pixel[G(img2, j, i)] = img->pixel[G(img, x+j, y+i)];
+    }
+  }
+  return img2;
 }
-
-
 /// Operations on two images
 
 /// Paste an image into a larger image.
