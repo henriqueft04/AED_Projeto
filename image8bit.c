@@ -349,7 +349,7 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
 // The returned index must satisfy (0 <= index < img->width*img->height)
 static inline int G(Image img, int x, int y) {
   int index;
-  // Insert your code here!
+  index = y*img->width + x;
   assert (0 <= index && index < img->width*img->height);
   return index;
 }
@@ -383,12 +383,10 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 /// resulting in a "photographic negative" effect.
 void ImageNegative(Image img) { ///
   assert (img != NULL);
-  for (int i = 0; i < img->height; i++)
-  {
-    for (int j = 0; j < img->width; j++)
-    {
-      int color = img->pixel[i,j];
-      img->pixel[i,j] = img->maxval - color;
+  for (int i = 0; i < img->height; i++) {
+    for (int j = 0; j < img->width; j++) {
+      int color = img->pixel[G(img,j,i)];
+      img->pixel[G(img,j,i)] = img->maxval - color;
     }
   }
 }
@@ -542,6 +540,7 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
     }
     return 1;
   }
+  return 0;
 }
 
 /// Locate a subimage inside another image.
@@ -551,7 +550,6 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
 int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
-  // TODO: usar validrect para acabar loop antes
   for (int i = 0; i < img1->height; i++) {
     for (int j = 0; j < img1->width; j++) {
       if (img1->pixel[G(img1, j, i)] == img2->pixel[0]) {
