@@ -311,14 +311,16 @@ int ImageMaxval(Image img) { ///
 /// *max is set to the maximum.
 void ImageStats(Image img, uint8* min, uint8* max) { ///
   assert (img != NULL);
-  // Insert your code here!
+
   for (int i = 0; i < img->height; i++) {
     for (int j = 0; j < img->width; j++) {
-      if (img->pixel[i*img->width + j] < *min) {
-        *min = img->pixel[i*img->width + j];
+      int index = G(img,j,i);
+      
+      if (img->pixel[index] < *min) {
+        *min = img->pixel[index];
       }
-      if (img->pixel[i*img->width + j] > *max) {
-        *max = img->pixel[i*img->width + j];
+      if (img->pixel[index] > *max) {
+        *max = img->pixel[index];
       }
     }
   }
@@ -528,7 +530,8 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));
-  // Insert your code here!
+  assert (0.0 <= alpha && alpha <= 1.0);
+
   for (int i = 0; i < img2->height; i++) {
     for (int j = 0; j < img2->width; j++) {
       if (img1->pixel[G(img1, x+j, y+i)] != img2->pixel[G(img2, j, i)]) {
@@ -546,6 +549,7 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));
+
   if (img1->pixel[G(img1,x,y)] == img2->pixel[0]) {
     for (int i = 0; i < img2->height; i++) {
       for (int j = 0; j < img2->width; j++) {
