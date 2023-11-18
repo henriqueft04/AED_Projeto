@@ -588,38 +588,47 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// Each pixel is substituted by the mean of the pixels in the rectangle
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
-void ImageBlur(Image img, int dx, int dy) { ///
-  assert (img != NULL);
-  assert (dx >= 0 && dy >= 0);
-  int numPixels;
-  int sum;
-  int lastX;
-  int lastY;
+void ImageBlur(Image img, int dx, int dy) {
+    assert(img != NULL);
+    assert(dx >= 0 && dy >= 0);
 
-  for (int i = 0; i < img->height; i+=2*dy) {
-    for (int j = 0; j < img->width; j+=2*dx) {
-      if (ImageValidRect(img, j, i, 2*dx+1, 2*dy+1)) {
-        lastX = 2*dx+1;
-        lastY = 2*dy+1;
-      }
-      else {
-        lastX = img->width - j - 1; 
-        lastY = img->height - i - 1;
-      }
-      numPixels = 0;
-      for (int k = 0; k <= lastY - 1; k++) {
-        for (int l = 0; l <= lastX - 1; l++) {
-          numPixels++;
-          sum += img->pixel[G(img, j+l, i+k)];
+    // Temporary buffer for storing intermediate results
+    double* temp = malloc(sizeof(double) * img->width * img->height);
+    double sum;
+    int count;
+
+    // Horizontal pass
+    for (int y = 0; y < img->height; y++) {
+        for (int x = 0; x < img->width; x++) {
+            sum = 0;
+            count = 0;
+            for (int i = -dx; i <= dx; i++) {
+                int nx = x + i;
+                if (nx >= 0 && nx < img->width) {
+                    sum += img->pixel[G(img, nx, y)];
+                    count++;
+                }
+            }
+            temp[G(img, x, y)] = sum / count;
         }
-      }
-      int color = (uint8)(sum/numPixels + 0.5);
-      //TODO MUDAR ESTA MERDA
-      for (int k = 0; k <= lastY - 1; k++) {
-        for (int l = 0; l <= lastX - 1; l++) {
-          img->pixel[G(img, j+l, i+k)] = color;
+    }
+
+    // Vertical pass on the horizontally blurred image (stored in temp)
+    for (int x = 0; x < img->width; x++) {
+        for (int y = 0; y < img->height; y++) {
+            sum = 0;
+            count = 0;
+            for (int i = -dy; i <= dy; i++) {
+                int ny = y + i;
+                if (ny >= 0 && ny < img->height) {
+                    sum += temp[G(img, x, ny)];
+                    count++;
+                }
+            }
+            img->pixel[G(img, x, y)] = (int)((sum / count) + 0.5);
         }
-      }
-    }  
-  }
+    }
+
+    // Free the temporary buffer
+    free(temp);
 }
