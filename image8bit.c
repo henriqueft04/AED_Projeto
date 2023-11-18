@@ -314,13 +314,12 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
 
   for (int i = 0; i < img->height; i++) {
     for (int j = 0; j < img->width; j++) {
-      int index = G(img,j,i);
-      
-      if (img->pixel[index] < *min) {
-        *min = img->pixel[index];
+
+      if (ImageGetPixel(img, j, i) < *min) {
+        *min = ImageGetPixel(img, j, i);
       }
-      if (img->pixel[index] > *max) {
-        *max = img->pixel[index];
+      if (ImageGetPixel(img, j, i) > *max) {
+        *max = ImageGetPixel(img, j, i);
       }
     }
   }
@@ -329,12 +328,16 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
 /// Check if pixel position (x,y) is inside img.
 int ImageValidPos(Image img, int x, int y) { ///
   assert (img != NULL);
+  assert (x >= 0 && y >= 0);
+
   return (0 <= x && x < img->width) && (0 <= y && y < img->height);
 }
 
 /// Check if rectangular area (x,y,w,h) is completely inside img.
 int ImageValidRect(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
+  assert (x >= 0 && y >= 0 && w >= 0 && h >= 0);
+
   return (ImageValidPos(img, x, y)) && (ImageValidPos(img,x+w,y)) && (ImageValidPos(img,x,y+w));
 }
 
@@ -349,8 +352,7 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
 // This internal function is used in ImageGetPixel / ImageSetPixel. 
 // The returned index must satisfy (0 <= index < img->width*img->height)
 static inline int G(Image img, int x, int y) {
-  int index;
-  index = y*img->width + x;
+  int index = y*img->width + x;
   assert (0 <= index && index < img->width*img->height);
   return index;
 }
@@ -386,8 +388,8 @@ void ImageNegative(Image img) { ///
   assert (img != NULL);
   for (int i = 0; i < img->height; i++) {
     for (int j = 0; j < img->width; j++) {
-      int color = img->pixel[G(img,j,i)];
-      img->pixel[G(img,j,i)] = ImageMaxval(img) - color;
+      int color = ImageGetPixel(img,j,i);
+      ImageSetPixel(img,j,i,img->maxval - color);
     }
   }
 }
@@ -397,13 +399,14 @@ void ImageNegative(Image img) { ///
 /// all pixels with level>=thr to white (maxval).
 void ImageThreshold(Image img, uint8 thr) { ///
   assert (img != NULL);
-  int numPixels = img->width * img->height;
-  for (int i = 0; i < numPixels; i++) {
-    if (img->pixel[i] < thr) {
-      img->pixel[i] = 0;
-    }
-    else {
-      img->pixel[i] = img->maxval;
+  for (int i = 0; i < img->height; i++) {
+    for (int j = 0; j < img->width; j++) {
+      if (ImageGetPixel(img,j,i) < thr) {
+        ImageSetPixel(img,j,i,0);
+      }
+      else {
+        ImageSetPixel(img,j,i,img->maxval);
+      }
     }
   }
 }
@@ -414,18 +417,18 @@ void ImageThreshold(Image img, uint8 thr) { ///
 void ImageBrighten(Image img, double factor) {
     assert(img != NULL && img->pixel != NULL);
 
-    int numPixels = img->width * img->height;
-    for (int i = 0; i < numPixels; i++) {
-      double newPixelValue = (double)img->pixel[i] * factor;
+    for (int i = 0; i < img->height; i++) {
+        for (int j = 0; j < img->width; j++) {
+          double newPixelValue = (double)img->pixel[G(img, j, i)] * factor;
 
-      // Clamping the value to the valid range
-      if (newPixelValue > (double)img->maxval) {
-          img->pixel[i] = img->maxval;
-      } else if (newPixelValue < 0.0) {
-          img->pixel[i] = 0;
-      } else {
-          img->pixel[i] = (int)(newPixelValue + 0.5);
-      }
+          if (newPixelValue > (double)img->maxval) {
+            ImageSetPixel(img, j, i, img->maxval);
+          } else if (newPixelValue < 0.0) {
+            ImageSetPixel(img, j, i, 0);
+          } else {
+            ImageSetPixel(img, j, i, (int)(newPixelValue + 0.5));
+          }
+        }
     }
 }
 /// Geometric transformations
@@ -451,10 +454,11 @@ void ImageBrighten(Image img, double factor) {
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageRotate(Image img) { ///
   assert (img != NULL);
+
   Image img2 = ImageCreate(img->height, img->width, img->maxval);
   for (int i = 0; i < img->height; i++) {
     for (int j = 0; j < img->width; j++) {
-      img2->pixel[G(img2, i, img->width - j - 1)] = img->pixel[G(img, j, i)];
+      ImageSetPixel(img2, i, img->width - j - 1, ImageGetPixel(img, j, i));
     }
   }
   return img2;
@@ -472,7 +476,7 @@ Image ImageMirror(Image img) { ///
   Image img2 = ImageCreate(img->width, img->height, img->maxval);
   for (int i = 0; i < img->height; i++) {
     for (int j = 0; j < img->width; j++) {
-      img2->pixel[G(img2, j, i)] = img->pixel[G(img, img->width - j - 1, i)];
+      ImageSetPixel(img2, j, i, ImageGetPixel(img, img->width - j - 1, i));
     }
   }
   return img2;
@@ -494,11 +498,11 @@ Image ImageMirror(Image img) { ///
 Image ImageCrop(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
   assert (ImageValidRect(img, x, y, w, h));
-  // Insert your code here!
+
   Image img2 = ImageCreate(w, h, img->maxval);
   for (int i = 0; i < img2->height; i++) {
     for (int j = 0; j < img2->width; j++) {
-      img2->pixel[G(img2, j, i)] = img->pixel[G(img, x+j, y+i)];
+      ImageSetPixel(img2, j, i, ImageGetPixel(img, x+j, y+i));
     }
   }
   return img2;
@@ -609,8 +613,8 @@ void ImageBlur(Image img, int dx, int dy) {
             for (int i = -dx; i <= dx; i++) {
                 int nx = x + i;
                 if (nx >= 0 && nx < img->width) {
-                    sum += img->pixel[G(img, nx, y)];
-                    count++;
+                  sum += ImageGetPixel(img, nx, y);
+                  count++;
                 }
             }
             temp[G(img, x, y)] = sum / count;
@@ -629,7 +633,7 @@ void ImageBlur(Image img, int dx, int dy) {
                     count++;
                 }
             }
-            img->pixel[G(img, x, y)] = (int)((sum / count) + 0.5);
+            ImageSetPixel(img, x, y, (int)(sum / count + 0.5));
         }
     }
 
