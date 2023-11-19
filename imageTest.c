@@ -37,15 +37,45 @@ int main(int argc, char* argv[]) {
   // Try changing the behaviour of the program by commenting/uncommenting
   // the appropriate lines.
 
-  //img2 = ImageCrop(img1, ImageWidth(img1)/4, ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
-  Image img2 = ImageRotate(img1);
-  if (img2 == NULL) {
-    error(2, errno, "Rotating img2: %s", ImageErrMsg());
-  }
+  Image img2 = img1;
 
+
+  /// Geometric transformations
+  //img2 = ImageCrop(img1, ImageWidth(img1)/4, ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
+
+  //img2 = ImageRotate(img1);
+  //if (img2 == NULL) {
+  //  error(2, errno, "Rotating img2: %s", ImageErrMsg());
+  //}
+
+  //img2 = ImageMirror(img1);
+
+
+  /// Pixel transformations
   //ImageNegative(img2);
+
   //ImageThreshold(img2, 100);
-  ImageBrighten(img2, 1.3);
+  //ImageThreshold(img2, 150);
+
+  //ImageBrighten(img2, 1.3);
+  //ImageBrighten(img2, 0.7);
+
+
+  /// Operations on two images
+  img1 = ImageCrop(img2, ImageWidth(img2)/4, ImageHeight(img2)/4, ImageWidth(img2)/2, ImageHeight(img2)/2);
+  
+  //ImagePaste(img2, 40, 40, img1);
+
+  //ImageBlend(img2, 40, 40, img1, 0.5);
+
+  //if (ImageMatchSubImage(img2, 0, 0, img1)) {
+  //  printf("Match!\n");
+  //} else {
+  //  printf("No match!\n");
+  //}
+
+  /// Filtering
+  ImageBlur(img2, 5, 5);
 
   if (ImageSave(img2, argv[2]) == 0) {
     error(2, errno, "%s: %s", argv[2], ImageErrMsg());
