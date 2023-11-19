@@ -329,7 +329,6 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
 /// Check if pixel position (x,y) is inside img.
 int ImageValidPos(Image img, int x, int y) { ///
   assert (img != NULL);
-  assert (x >= 0 && y >= 0);
   // The pixel at position (x,y) is inside img if it is inside the image boundaries
   return (0 <= x && x < img->width) && (0 <= y && y < img->height);
 }
@@ -616,43 +615,36 @@ void ImageBlur(Image img, int dx, int dy) {
     assert(img != NULL);
     assert(dx >= 0 && dy >= 0);
 
-    // Temporary buffer for storing intermediate results
-    double* temp = malloc(sizeof(double) * img->width * img->height);
-    double sum;
-    int count;
+    // Create a temporary buffer for the blurred image
+    uint8 *tempBuffer = malloc(img->width * img->height * sizeof(uint8));
 
-    // Horizontal pass
     for (int y = 0; y < img->height; y++) {
         for (int x = 0; x < img->width; x++) {
-            sum = 0;
-            count = 0;
-            for (int i = -dx; i <= dx; i++) {
-                int nx = x + i;
-                if (nx >= 0 && nx < img->width) {
-                  sum += ImageGetPixel(img, nx, y);
-                  count++;
+            double sum = 0;
+            int count = 0;
+
+            // Calculate the mean for the neighborhood
+            for (int i = -dy; i <= dy; i++) {
+                for (int j = -dx; j <= dx; j++) {
+                    int nx = x + j;
+                    int ny = y + i;
+
+                    // Check if the neighbor is within image bounds
+                    if (ImageValidPos(img, nx, ny)) {
+                        sum += ImageGetPixel(img, nx, ny);
+                        count++;
+                    }
                 }
             }
-            temp[G(img, x, y)] = sum / count;
+
+            // Store the blurred value in the temporary buffer
+            tempBuffer[G(img, x, y)] = (uint8)((sum / count) + 0.5);
         }
     }
 
-    // Vertical pass on the horizontally blurred image (stored in temp)
-    for (int x = 0; x < img->width; x++) {
-        for (int y = 0; y < img->height; y++) {
-            sum = 0;
-            count = 0;
-            for (int i = -dy; i <= dy; i++) {
-                int ny = y + i;
-                if (ny >= 0 && ny < img->height) {
-                    sum += temp[G(img, x, ny)];
-                    count++;
-                }
-            }
-            ImageSetPixel(img, x, y, (int)(sum / count + 0.5));
-        }
-    }
+    // Copy the blurred values from the temporary buffer back to the image
+    img->pixel = tempBuffer;
 
     // Free the temporary buffer
-    free(temp);
+    free(tempBuffer);
 }
