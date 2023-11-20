@@ -563,19 +563,20 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
-  assert (ImageValidRect(img1, x, y, img2->width, img2->height));
-  // If the pixel at position (x,y) of img1 is equal to the first pixel of img2
-  if (ImageGetPixel(img1, x, y) == ImageGetPixel(img2, 0, 0)) {
-    for (int i = 0; i < img2->height; i++) {
-      for (int j = 0; j < img2->width; j++) {
-        // If any pixel of img1 is different from img2 return 0
-        if (ImageGetPixel(img1, x+j, y+i) != ImageGetPixel(img2, j, i)) {
-          return 0;
+  // Check if img2 fits inside img1 at position (x, y)
+  if (ImageValidRect(img1, x, y, img2->width, img2->height)) {
+    if (ImageGetPixel(img1, x, y) == ImageGetPixel(img2, 0, 0)) {
+      for (int i = 0; i < img2->height; i++) {
+        for (int j = 0; j < img2->width; j++) {
+          // If any pixel of img1 is different from img2 return 0
+          if (ImageGetPixel(img1, x+j, y+i) != ImageGetPixel(img2, j, i)) {
+            return 0;
+          }
         }
       }
+      // If all pixels are equal return 1
+      return 1;
     }
-    // If all pixels are equal return 1
-    return 1;
   }
   return 0;
 }
@@ -590,15 +591,12 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 
   for (int i = 0; i < img1->height; i++) {
     for (int j = 0; j < img1->width; j++) {
-      if (ImageGetPixel(img1, j, i) == ImageGetPixel(img2, 0, 0)) {
-        // Check if img2 is inside img1
-        if (ImageMatchSubImage(img1, j, i, img2)) {
-          *px = j;
-          *py = i;
-          return 1;
-        }
-        continue;
+      if (ImageMatchSubImage(img1, j, i, img2)) {
+        *px = j;
+        *py = i;
+        return 1;
       }
+      continue;
     }
   }
   return 0;
