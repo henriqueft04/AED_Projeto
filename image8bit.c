@@ -657,4 +657,5 @@ void ImageBlur(Image img, int dx, int dy) {
       ImageSetPixel(img, x, y, (uint8)(sum/area + 0.5));
     }
   }
+  free(summedTable);
 }
