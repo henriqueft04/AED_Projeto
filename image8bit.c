@@ -610,39 +610,51 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy) {
-    assert(img != NULL);
-    assert(dx >= 0 && dy >= 0);
+  assert(img != NULL);
+  assert(dx >= 0 && dy >= 0);
 
-    // Create a temporary buffer for the blurred image
-    uint8 *tempBuffer = malloc(img->width * img->height * sizeof(uint8));
+  int area;
+  double sum;
+  unsigned int *summedTable = malloc(img->width * img->height * sizeof(unsigned int));
 
-    for (int y = 0; y < img->height; y++) {
-        for (int x = 0; x < img->width; x++) {
-            double sum = 0;
-            int count = 0;
-
-            // Calculate the mean for the neighborhood
-            for (int i = -dy; i <= dy; i++) {
-                for (int j = -dx; j <= dx; j++) {
-                    int nx = x + j;
-                    int ny = y + i;
-
-                    // Check if the neighbor is within image bounds
-                    if (ImageValidPos(img, nx, ny)) {
-                        sum += ImageGetPixel(img, nx, ny);
-                        count++;
-                    }
-                }
-            }
-
-            // Store the blurred value in the temporary buffer
-            tempBuffer[G(img, x, y)] = (uint8)((sum / count) + 0.5);
-        }
+  for (int y = 0; y < img->height; y++) {
+    for (int x = 0; x < img->width; x++) {
+      if (x == 0 && y == 0) {
+        summedTable[G(img, x, y)] = ImageGetPixel(img,x,y);
+      } else if (x == 0) {
+        summedTable[G(img, x, y)] = ImageGetPixel(img,x,y) + summedTable[G(img, x, y-1)];
+      } else if (y == 0) {
+        summedTable[G(img, x, y)] = ImageGetPixel(img,x,y) + summedTable[G(img, x-1, y)];
+      } else {
+        summedTable[G(img, x, y)] = ImageGetPixel(img,x,y) + summedTable[G(img, x, y-1)] + summedTable[G(img, x-1, y)] - summedTable[G(img, x-1, y-1)];
+      }
     }
+  }
 
-    // Copy the blurred values from the temporary buffer back to the image
-    img->pixel = tempBuffer;
+  for (int y = 0; y < img->height; y++) {
+    for (int x = 0; x < img->width; x++) {
+      int x1 = (x - dx > 0) ? x - dx : 0;
+      int y1 = (y - dy > 0) ? y - dy : 0;
+      int x2 = (x + dx < img->width) ? x + dx : img->width - 1;
+      int y2 = (y + dy < img->height) ? y + dy : img->height - 1;
 
-    // Free the temporary buffer
-    free(tempBuffer);
+      if (x1 == 0 && y1 == 0) {
+        area = (x2+1)*(y2+1);
+        sum = summedTable[G(img, x2, y2)];
+      }
+      else if (x1 == 0) {
+        area = (x2+1)*(y2-y1+1);
+        sum = summedTable[G(img, x2, y2)] - summedTable[G(img, x2, y1-1)];
+      }
+      else if (y1 == 0) {
+        area = (x2-x1+1)*(y2+1);
+        sum = summedTable[G(img, x2, y2)] - summedTable[G(img, x1-1, y2)];
+      }
+      else {
+        area = (x2-x1+1)*(y2-y1+1);
+        sum = summedTable[G(img, x2, y2)] - summedTable[G(img, x2, y1-1)] - summedTable[G(img, x1-1, y2)] + summedTable[G(img, x1-1, y1-1)];
+      }
+      ImageSetPixel(img, x, y, (uint8)(sum/area + 0.5));
+    }
+  }
 }
