@@ -36,9 +36,8 @@ int main(int argc, char* argv[]) {
 
   // Try changing the behaviour of the program by commenting/uncommenting
   // the appropriate lines.
-
-  Image img2 = img1;
-
+  //Image img2 = ImageCreate(ImageWidth(img1),ImageHeight(img1),ImageMaxval(img1));
+  //memcpy((void *)(*((int *) img2+3)),(void *)(*((int *) img1+3)),ImageWidth(img2)*ImageHeight(img2));
 
   /// Geometric transformations
   //img2 = ImageCrop(img1, ImageWidth(img1)/4, ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
@@ -62,7 +61,7 @@ int main(int argc, char* argv[]) {
 
 
   /// Operations on two images
-  img1 = ImageCrop(img2, ImageWidth(img2)/4, ImageHeight(img2)/4, ImageWidth(img2)/2, ImageHeight(img2)/2);
+  //img1 = ImageCrop(img2, ImageWidth(img2)/4, ImageHeight(img2)/4, ImageWidth(img2)/2, ImageHeight(img2)/2);
   
   //ImagePaste(img2, 40, 40, img1);
 
@@ -75,14 +74,14 @@ int main(int argc, char* argv[]) {
   //}
 
   /// Filtering
-  ImageBlur(img2, 5, 5);
+  ImageBlur(img1, 5, 5);
 
-  if (ImageSave(img2, argv[2]) == 0) {
+  if (ImageSave(img1, argv[2]) == 0) {
     error(2, errno, "%s: %s", argv[2], ImageErrMsg());
   }
 
   ImageDestroy(&img1);
-  ImageDestroy(&img2);
+  //ImageDestroy(&img2);
   return 0;
 }
 
