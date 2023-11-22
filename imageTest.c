@@ -36,11 +36,11 @@ int main(int argc, char* argv[]) {
 
   // Try changing the behaviour of the program by commenting/uncommenting
   // the appropriate lines.
-  //Image img2 = ImageCreate(ImageWidth(img1),ImageHeight(img1),ImageMaxval(img1));
+  Image img2 = ImageCreate(ImageWidth(img1),ImageHeight(img1),ImageMaxval(img1));
   //memcpy((void *)(*((int *) img2+3)),(void *)(*((int *) img1+3)),ImageWidth(img2)*ImageHeight(img2));
 
   /// Geometric transformations
-  //img2 = ImageCrop(img1, ImageWidth(img1)/4, ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
+  img2 = ImageCrop(img1, ImageWidth(img1)/4,ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
 
   //img2 = ImageRotate(img1);
   //if (img2 == NULL) {
@@ -67,21 +67,21 @@ int main(int argc, char* argv[]) {
 
   //ImageBlend(img2, 40, 40, img1, 0.5);
 
-  //if (ImageMatchSubImage(img2, 0, 0, img1)) {
-  //  printf("Match!\n");
-  //} else {
-  //  printf("No match!\n");
-  //}
-
-  /// Filtering
-  ImageBlur(img1, 18, 18);
-
-  if (ImageSave(img1, argv[2]) == 0) {
-    error(2, errno, "%s: %s", argv[2], ImageErrMsg());
+  if (ImageMatchSubImage(img1,  ImageWidth(img1)/4,ImageHeight(img1)/4, img2)) {
+    printf("Match!\n");
+  } else {
+    printf("No match!\n");
   }
 
+  /// Filtering
+  //ImageBlur(img1, 18, 18);
+
+  //if (ImageSave(img1, argv[2]) == 0) {
+  //  error(2, errno, "%s: %s", argv[2], ImageErrMsg());
+  //}
+
   ImageDestroy(&img1);
-  //ImageDestroy(&img2);
+  ImageDestroy(&img2);
   return 0;
 }
 
