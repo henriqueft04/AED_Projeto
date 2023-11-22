@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
   ImageInit();
   
-  printf("# LOAD image");
+  printf("# LOAD image\n");
   InstrReset(); // to reset instrumentation
   Image img1 = ImageLoad(argv[1]);
   if (img1 == NULL) {
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
   //}
 
   /// Filtering
-  ImageBlur(img1, 5, 5);
+  ImageBlur(img1, 18, 18);
 
   if (ImageSave(img1, argv[2]) == 0) {
     error(2, errno, "%s: %s", argv[2], ImageErrMsg());
