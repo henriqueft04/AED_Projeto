@@ -110,10 +110,19 @@ void InstrReset(void) { ///
 
 // Print times and all named counter values
 void InstrPrint(void) { ///
+  FILE* f = fopen("instr.txt", "w");
+  if (f == NULL) {
+    fprintf(stderr, "Error opening file instr.txt\n");
+    exit(1);
+  }
   // elapsed time since last reset:
   double time = cpu_time() - InstrTime;
   // compute time in calibrated time units:
   double caltime = time / InstrCTU;
+
+  // print to file:
+  fprintf(f, "%f", time);
+
 
   printf("#%14.15s\t%15.15s", "time", "caltime");
   for (int i = 0; i < NUMCOUNTERS; i++)
