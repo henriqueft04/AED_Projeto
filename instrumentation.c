@@ -18,7 +18,7 @@
 ///   a[k] = a[i] + a[j];
 /// }
 /// InstrPrint();  // to show time and counters
-#define _DEFAULT_SOURCE
+
 #include "instrumentation.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,18 +110,10 @@ void InstrReset(void) { ///
 
 // Print times and all named counter values
 void InstrPrint(void) { ///
-  FILE* f = fopen("./Data/worst_locate2.txt", "a");
-  if (f == NULL) {
-    fprintf(stderr, "Error opening file instr.txt\n");
-    exit(1);
-  }
   // elapsed time since last reset:
   double time = cpu_time() - InstrTime;
   // compute time in calibrated time units:
   double caltime = time / InstrCTU;
-
-  // print to file:
-  fprintf(f, "%lu %f %ld  \n", InstrCount[0], time, InstrCount[2]);
 
   printf("#%14.15s\t%15.15s", "time", "caltime");
   for (int i = 0; i < NUMCOUNTERS; i++)
@@ -134,4 +126,23 @@ void InstrPrint(void) { ///
       printf("\t%15lu", InstrCount[i]);  
   puts("");
 }
+
+
+void InstrPrintFile(void) { ///
+  FILE* f = fopen("./Data/worst_locate2.txt", "a");
+  if (f == NULL) {
+    printf("Error opening file!\n");
+    exit(1);
+  }
+  // elapsed time since last reset:
+  double time = cpu_time() - InstrTime;
+  // compute time in calibrated time units:
+  double caltime = time / InstrCTU;
+
+  // print to file:
+  fprintf(f, "%lu %f %ld  \n", InstrCount[0], time, InstrCount[2]);
+  
+  fclose(f);
+}
+
 

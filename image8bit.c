@@ -10,8 +10,8 @@
 /// 2013, 2023
 
 // Student authors (fill in below):
+// NMec: 113786  Name: Gabriel Martins Silva
 // NMec:  Name:
-// 
 // 
 // 
 // Date:
@@ -148,16 +148,13 @@ void ImageInit(void) { ///
   InstrName[0] = "pixmem";  // InstrCount[0] will count pixel array acesses
   // Name other counters here...
   InstrName[1] = "imgcreate"; // InstrCount[1] will count image creations
-
-  InstrName[2] = "imgsize";
-
+  InstrName[2] = "imgsize"; // InstrCount[2] will count loaded image size
 }
 
 // Macros to simplify accessing instrumentation counters:
 #define PIXMEM InstrCount[0]
 // Add more macros here...
 #define IMGCREATE InstrCount[1]
-
 #define IMGSIZE InstrCount[2]
 
 // TIP: Search for PIXMEM or InstrCount to see where it is incremented!
@@ -194,7 +191,6 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
   img->maxval = maxval;
 
   IMGCREATE++;
-  IMGSIZE = size;
   return img;
 }
 
@@ -263,6 +259,8 @@ Image ImageLoad(const char* filename) { ///
     errno = errsave;
   }
   if (f != NULL) fclose(f);
+
+  IMGSIZE = img->width * img->height;
   return img;
 }
 
