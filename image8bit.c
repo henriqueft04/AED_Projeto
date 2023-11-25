@@ -148,12 +148,17 @@ void ImageInit(void) { ///
   InstrName[0] = "pixmem";  // InstrCount[0] will count pixel array acesses
   // Name other counters here...
   InstrName[1] = "imgcreate"; // InstrCount[1] will count image creations
+
+  InstrName[2] = "imgsize";
+
 }
 
 // Macros to simplify accessing instrumentation counters:
 #define PIXMEM InstrCount[0]
 // Add more macros here...
 #define IMGCREATE InstrCount[1]
+
+#define IMGSIZE InstrCount[2]
 
 // TIP: Search for PIXMEM or InstrCount to see where it is incremented!
 
@@ -189,6 +194,7 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
   img->maxval = maxval;
 
   IMGCREATE++;
+  IMGSIZE = size;
   return img;
 }
 
