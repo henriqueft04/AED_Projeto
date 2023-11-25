@@ -506,16 +506,18 @@ Image ImageMirror(Image img) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageCrop(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
-  assert (ImageValidRect(img, x, y, w, h));
-  // Create new image with width and height desired
-  Image img2 = ImageCreate(w, h, img->maxval);
-  for (int i = 0; i < img2->height; i++) {
-    for (int j = 0; j < img2->width; j++) {
-      // Copy pixels from subimage of img([x, x+w]x[y, y+h]) to img2
-      ImageSetPixel(img2, j, i, ImageGetPixel(img, x+j, y+i));
+  if (ImageValidRect(img, x, y, w, h)) {
+    // Create new image with width and height desired
+    Image img2 = ImageCreate(w, h, img->maxval);
+    for (int i = 0; i < img2->height; i++) {
+      for (int j = 0; j < img2->width; j++) {
+        // Copy pixels from subimage of img([x, x+w]x[y, y+h]) to img2
+        ImageSetPixel(img2, j, i, ImageGetPixel(img, x+j, y+i));
+      }
     }
+    return img2;
   }
-  return img2;
+  return NULL;
 }
 /// Operations on two images
 
