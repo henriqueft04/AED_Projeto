@@ -9,7 +9,7 @@
 void process_directory(const char *folder_path);
 
 int main() {
-    char folder_path[20] = "./test";
+    char folder_path[20] = "./pgm";
     process_directory(folder_path);
     return 0;
 }
@@ -28,6 +28,7 @@ void process_directory(const char *folder_path) {
 
     while ((entry = readdir(dir))) {
         if (entry->d_type == DT_DIR) {
+            
             if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
                 snprintf(full_path, sizeof(full_path), "%s/%s", folder_path, entry->d_name);
                 process_directory(full_path);
