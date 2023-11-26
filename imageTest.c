@@ -92,12 +92,7 @@ int main(int argc, char* argv[]) {
   int size1 = ImageHeight(img1)*ImageWidth(img1);
   int size2 = ImageHeight(img2)*ImageWidth(img2);
   fprintf(f, "%d %d\n", size1, size2);
-  if (ImageLocateSubImage(img1, &x, &y ,img2)) {
-    printf("Match!\n");
-  } else {
-    printf("No match!\n");
-  }
-  fclose(f);
+  ImageLocateSubImage(img1, &x, &y ,img2);
 
   /// Filtering
 
@@ -107,8 +102,8 @@ int main(int argc, char* argv[]) {
   //  error(2, errno, "%s: %s", argv[2], ImageErrMsg());
   //}
 
-  //InstrPrintFile(); // to print instrumentation to a file
-  InstrPrint(); // to print instrumentation
+  InstrPrintFile(); // to print instrumentation to a file
+  //InstrPrint(); // to print instrumentation
   ImageDestroy(&img1);
   ImageDestroy(&img2);
   return 0;
