@@ -110,7 +110,7 @@ void InstrReset(void) { ///
 
 // Print times and all named counter values
 void InstrPrint(void) { ///
-  FILE* f = fopen("./Data/blur_otimized.txt", "a");
+  FILE* f = fopen("./Data/blur_complexedaf.txt", "a");
   if (f == NULL) {
     fprintf(stderr, "Error opening file instr.txt\n");
     exit(1);
