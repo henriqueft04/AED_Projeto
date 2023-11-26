@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
   //int y ;
  // y= 0;
 
-  Image img2 = ImageCrop(img1,2* ImageWidth(img1)/3, 2*ImageHeight(img1)/3, ImageWidth(img1)/3, ImageHeight(img1)/3);
+  Image img2 = ImageCrop(img1, 0, 0, ImageWidth(img1)/3, ImageHeight(img1)/3);
 
   //img2 = ImageRotate(img1);
   //if (img2 == NULL) {
@@ -82,11 +82,22 @@ int main(int argc, char* argv[]) {
    // printf("No match!\n");
   //}
 
- if (ImageLocateSubImage(img1, &x, &y ,img2)) {
-   printf("Match!\n");
-  } else {
-   printf("No match!\n");
+  FILE* f = fopen("./Data/sizes.txt", "a");
+  if (f == NULL) {
+    printf("Error opening file!\n");
+    exit(1);
   }
+
+  InstrReset(); 
+  int size1 = ImageHeight(img1)*ImageWidth(img1);
+  int size2 = ImageHeight(img2)*ImageWidth(img2);
+  fprintf(f, "%d %d\n", size1, size2);
+  if (ImageLocateSubImage(img1, &x, &y ,img2)) {
+    printf("Match!\n");
+  } else {
+    printf("No match!\n");
+  }
+  fclose(f);
 
   /// Filtering
 
