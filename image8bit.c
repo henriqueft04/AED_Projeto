@@ -14,7 +14,7 @@
 // NMec: 114588 Name: Henrique Ferreira Teixeira
 // 
 // 
-// Date:
+// Date: 26/11/2023
 //
 
 #include "image8bit.h"
