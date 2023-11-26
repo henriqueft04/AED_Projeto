@@ -40,7 +40,8 @@ int main(int argc, char* argv[]) {
   /// Geometric transformations
   int x = 0;
   int y = 0;
-  Image img2 = ImageCrop(img1,0,0, ImageWidth(img1)/6, ImageHeight(img1)/6);
+  Image img2 = ImageLoad(argv[1]);
+ // Image img2 = ImageCrop(img1,0,0, ImageWidth(img1)/6, ImageHeight(img1)/6);
   //int x ;
   //x= 0;
   //int y ;
