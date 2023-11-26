@@ -613,50 +613,59 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// Blur an image by a applying a (2dx+1)x(2dy+1) mean filter.
 /// Each pixel is substituted by the mean of the pixels in the rectangle
 /// [x-dx, x+dx]x[y-dy, y+dy].
-/// The image is changed in-place
-
-
+/// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy) {
-    assert(img != NULL);
-    assert(dx >= 0 && dy >= 0);
+  assert(img != NULL);
+  assert(dx >= 0 && dy >= 0);
 
-    // Temporary buffer for storing intermediate results
-    double* temp = malloc(sizeof(double) * img->width * img->height);
-    double sum;
-    int count;
+  int area;
+  double sum;
+  // Create summed area table
+  unsigned int *summedTable = malloc(img->width * img->height * sizeof(unsigned int));
 
-    // Horizontal pass
-    for (int y = 0; y < img->height; y++) {
-        for (int x = 0; x < img->width; x++) {
-            sum = 0;
-            count = 0;
-            for (int i = -dx; i <= dx; i++) {
-                int nx = x + i;
-                if (nx >= 0 && nx < img->width) {
-                    sum += ImageGetPixel(img, nx, y);
-                    count++;
-                }
-            }
-            temp[G(img, x, y)] = sum / count;
-        }
-    }
-
-    // Vertical pass on the horizontally blurred image (stored in temp)
+  // Fill summed area table
+  for (int y = 0; y < img->height; y++) {
     for (int x = 0; x < img->width; x++) {
-        for (int y = 0; y < img->height; y++) {
-            sum = 0;
-            count = 0;
-            for (int i = -dy; i <= dy; i++) {
-                int ny = y + i;
-                if (ny >= 0 && ny < img->height) {
-                    sum += temp[G(img, x, ny)];
-                    count++;
-                }
-            }
-            ImageSetPixel(img, x, y , (int)((sum / count) + 0.5));
-        }
+      // In case of being in the first row or column
+      if (x == 0 && y == 0) {
+        summedTable[G(img, x, y)] = ImageGetPixel(img,x,y);
+      } else if (x == 0) {
+        summedTable[G(img, x, y)] = ImageGetPixel(img,x,y) + summedTable[G(img, x, y-1)];
+      } else if (y == 0) {
+        summedTable[G(img, x, y)] = ImageGetPixel(img,x,y) + summedTable[G(img, x-1, y)];
+      } else {
+        summedTable[G(img, x, y)] = ImageGetPixel(img,x,y) + summedTable[G(img, x, y-1)] + summedTable[G(img, x-1, y)] - summedTable[G(img, x-1, y-1)];
+      }
     }
+  }
 
-    // Free the temporary buffer
-    free(temp);
+  for (int y = 0; y < img->height; y++) {
+    for (int x = 0; x < img->width; x++) {
+      int x1 = (x - dx > 0) ? x - dx : 0;
+      int y1 = (y - dy > 0) ? y - dy : 0;
+      int x2 = (x + dx < img->width) ? x + dx : img->width - 1;
+      int y2 = (y + dy < img->height) ? y + dy : img->height - 1;
+
+      // Calculate area and sum of pixels in the rectangle
+      if (x1 == 0 && y1 == 0) {
+        area = (x2+1)*(y2+1);
+        sum = summedTable[G(img, x2, y2)];
+      }
+      else if (x1 == 0) {
+        area = (x2+1)*(y2-y1+1);
+        sum = summedTable[G(img, x2, y2)] - summedTable[G(img, x2, y1-1)];
+      }
+      else if (y1 == 0) {
+        area = (x2-x1+1)*(y2+1);
+        sum = summedTable[G(img, x2, y2)] - summedTable[G(img, x1-1, y2)];
+      }
+      else {
+        area = (x2-x1+1)*(y2-y1+1);
+        sum = summedTable[G(img, x2, y2)] - summedTable[G(img, x2, y1-1)] - summedTable[G(img, x1-1, y2)] + summedTable[G(img, x1-1, y1-1)];
+      }
+      ImageSetPixel(img, x, y, (uint8)(sum/area + 0.5));
+    }
+  }
+  // Free summed area table
+  free(summedTable);
 }
