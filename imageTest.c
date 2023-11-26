@@ -38,17 +38,18 @@ int main(int argc, char* argv[]) {
   // the appropriate lines.
 
   /// Geometric transformations
-  int x = 0;
-  int y = 0;
-   InstrReset(); // to reset instrumentation
-  Image img2 = ImageLoad(argv[1]);
+  int x;
+  int y;
+   //InstrReset(); // to reset instrumentation
+  //Image img2 = ImageLoad(argv[1]);
  
  // Image img2 = ImageCrop(img1,0,0, ImageWidth(img1)/6, ImageHeight(img1)/6);
   //int x ;
   //x= 0;
   //int y ;
  // y= 0;
-  //img2 = ImageCrop(img1,x,y, ImageWidth(img1)/6, ImageHeight(img1)/6);
+
+  Image img2 = ImageCrop(img1,2* ImageWidth(img1)/3, 2*ImageHeight(img1)/3, ImageWidth(img1)/3, ImageHeight(img1)/3);
 
   //img2 = ImageRotate(img1);
   //if (img2 == NULL) {
@@ -81,19 +82,19 @@ int main(int argc, char* argv[]) {
    // printf("No match!\n");
   //}
 
- // if (ImageLocateSubImage(img1, &x, &y ,img2)) {
-  // printf("Match!\n");
-  //} else {
-   //printf("No match!\n");
-  //}
+ if (ImageLocateSubImage(img1, &x, &y ,img2)) {
+   printf("Match!\n");
+  } else {
+   printf("No match!\n");
+  }
 
   /// Filtering
 
-  ImageBlur(img1, 18, 18 );
+  //ImageBlur(img1, 18, 18 );
 
-  if (ImageSave(img1, argv[2]) == 0) {
-    error(2, errno, "%s: %s", argv[2], ImageErrMsg());
-  }
+//  if (ImageSave(img1, argv[2]) == 0) {
+  //  error(2, errno, "%s: %s", argv[2], ImageErrMsg());
+  //}
 
   //InstrPrintFile(); // to print instrumentation to a file
   InstrPrint(); // to print instrumentation
