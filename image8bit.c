@@ -155,6 +155,7 @@ void ImageInit(void) { ///
 #define PIXMEM InstrCount[0]
 // Add more macros here...
 #define IMGCREATE InstrCount[1]
+
 #define IMGSIZE InstrCount[2]
 
 // TIP: Search for PIXMEM or InstrCount to see where it is incremented!

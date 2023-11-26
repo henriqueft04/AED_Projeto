@@ -78,11 +78,11 @@ int main(int argc, char* argv[]) {
    // printf("No match!\n");
   //}
 
-  if (ImageLocateSubImage(img1, &x, &y ,img2)) {
-   printf("Match!\n");
-  } else {
-   printf("No match!\n");
-  }
+ // if (ImageLocateSubImage(img1, &x, &y ,img2)) {
+  // printf("Match!\n");
+  //} else {
+   //printf("No match!\n");
+  //}
 
   /// Filtering
 
