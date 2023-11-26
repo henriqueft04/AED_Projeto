@@ -33,14 +33,14 @@ int main(int argc, char* argv[]) {
   if (img1 == NULL) {
     error(2, errno, "Loading %s: %s", argv[1], ImageErrMsg());
   }
-  InstrPrint(); // to print instrumentation
 
   // Try changing the behaviour of the program by commenting/uncommenting
   // the appropriate lines.
-  Image img2 = ImageCreate(ImageWidth(img1),ImageHeight(img1),ImageMaxval(img1));
-  //memcpy((void *)(*((int *) img2+3)),(void *)(*((int *) img1+3)),ImageWidth(img2)*ImageHeight(img2));
 
   /// Geometric transformations
+  int x = 0;
+  int y = 0;
+  Image img2 = ImageCrop(img1,0,0, ImageWidth(img1)/6, ImageHeight(img1)/6);
   //int x ;
   //x= 0;
   //int y ;
@@ -77,14 +77,12 @@ int main(int argc, char* argv[]) {
   //} else {
    // printf("No match!\n");
   //}
-  //int x;
-  //int y; 
 
-//  if (ImageLocateSubImage(img1, &x, &y ,img2)) {
- //  printf("Match!\n");
-  //} else {
-   //printf("No match!\n");
- // }
+  if (ImageLocateSubImage(img1, &x, &y ,img2)) {
+   printf("Match!\n");
+  } else {
+   printf("No match!\n");
+  }
 
   /// Filtering
 
@@ -94,6 +92,8 @@ int main(int argc, char* argv[]) {
     error(2, errno, "%s: %s", argv[2], ImageErrMsg());
   }
 
+  //InstrPrintFile(); // to print instrumentation to a file
+  InstrPrint(); // to print instrumentation
   ImageDestroy(&img1);
   ImageDestroy(&img2);
   return 0;
