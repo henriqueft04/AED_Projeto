@@ -41,11 +41,11 @@ int main(int argc, char* argv[]) {
   //memcpy((void *)(*((int *) img2+3)),(void *)(*((int *) img1+3)),ImageWidth(img2)*ImageHeight(img2));
 
   /// Geometric transformations
-  int x ;
-  x= 0;
-  int y ;
-  y= 0;
-  img2 = ImageCrop(img1,x,y, ImageWidth(img1)/6, ImageHeight(img1)/6);
+  //int x ;
+  //x= 0;
+  //int y ;
+ // y= 0;
+  //img2 = ImageCrop(img1,x,y, ImageWidth(img1)/6, ImageHeight(img1)/6);
 
   //img2 = ImageRotate(img1);
   //if (img2 == NULL) {
@@ -73,23 +73,26 @@ int main(int argc, char* argv[]) {
   //ImageBlend(img2, 40, 40, img1, 0.5);
 
   //if (ImageMatchSubImage(img1,  5*ImageWidth(img1)/6, 5*ImageHeight(img1)/6, img2)) {
-   // printf("Match!\n");
+   // printf("Match!\n")
   //} else {
    // printf("No match!\n");
   //}
+  //int x;
+  //int y; 
 
-  if (ImageLocateSubImage(img1, &x, &y ,img2)) {
-   printf("Match!\n");
-  } else {
-   printf("No match!\n");
-  }
+//  if (ImageLocateSubImage(img1, &x, &y ,img2)) {
+ //  printf("Match!\n");
+  //} else {
+   //printf("No match!\n");
+ // }
 
   /// Filtering
-  //ImageBlur(img1, , );
 
-  //if (ImageSave(img1, argv[2]) == 0) {
-   // error(2, errno, "%s: %s", argv[2], ImageErrMsg());
-  //}
+  ImageBlur(img1, 18, 18 );
+
+  if (ImageSave(img1, argv[2]) == 0) {
+    error(2, errno, "%s: %s", argv[2], ImageErrMsg());
+  }
 
   ImageDestroy(&img1);
   ImageDestroy(&img2);

@@ -110,18 +110,27 @@ void InstrReset(void) { ///
 
 // Print times and all named counter values
 void InstrPrint(void) { ///
-  FILE* f = fopen("./Data/worst_locate2.txt", "a");
+  FILE* f = fopen("./Data/blur_otimized.txt", "a");
   if (f == NULL) {
     fprintf(stderr, "Error opening file instr.txt\n");
     exit(1);
   }
+
+  fseek(f, 0, SEEK_END);
+  long fileSize = ftell(f);  
+  if (fileSize == 0) {
+    
+    fprintf(f,"%10s %10s %10s \n" ,"PIXMEM" ,"TIME", "SIZE"); 
+  }
+  fseek(f, 0, SEEK_SET);  
+
   // elapsed time since last reset:
   double time = cpu_time() - InstrTime;
   // compute time in calibrated time units:
   double caltime = time / InstrCTU;
 
   // print to file:
-  fprintf(f, "%lu %f %ld  \n", InstrCount[0], time, InstrCount[2]);
+  fprintf(f, "%10lu %10f %10ld  \n", InstrCount[0], time, InstrCount[2]);
 
   printf("#%14.15s\t%15.15s", "time", "caltime");
   for (int i = 0; i < NUMCOUNTERS; i++)
