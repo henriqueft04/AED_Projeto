@@ -572,7 +572,6 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (ImageValidPos(img1, x, y));
   // Check if img2 fits inside img1 at position (x, y)
   if (ImageValidRect(img1, x, y, img2->width, img2->height)) {
-    if (ImageGetPixel(img1, x, y) == ImageGetPixel(img2, 0, 0)) {
       for (int i = 0; i < img2->height; i++) {
         for (int j = 0; j < img2->width; j++) {
           // If any pixel of img1 is different from img2 return 0
@@ -583,7 +582,6 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
       }
       // If all pixels are equal return 1
       return 1;
-    }
   }
   return 0;
 }
