@@ -38,8 +38,8 @@ int main(int argc, char* argv[]) {
   // the appropriate lines.
 
   /// Geometric transformations
-  int x;
-  int y;
+ // int x;
+  //int y;
    //InstrReset(); // to reset instrumentation
   //Image img2 = ImageLoad(argv[1]);
  
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
   //int y ;
  // y= 0;
 
-  Image img2 = ImageCrop(img1, 0, 0, ImageWidth(img1)/3, ImageHeight(img1)/3);
+  //Image img2 = ImageCrop(img1, 2*ImageWidth(img1)/3, 2*ImageHeight(img1)/3, ImageWidth(img1)/3, ImageHeight(img1)/3);
 
   //img2 = ImageRotate(img1);
   //if (img2 == NULL) {
@@ -82,21 +82,22 @@ int main(int argc, char* argv[]) {
    // printf("No match!\n");
   //}
 
-  FILE* f = fopen("./Data/sizes.txt", "a");
-  if (f == NULL) {
-    printf("Error opening file!\n");
-    exit(1);
-  }
+  //FILE* f = fopen("./Data/sizes.txt", "a");
+  //if (f == NULL) {
+    //printf("Error opening file!\n");
+    //exit(1);
+  //}
 
-  InstrReset(); 
-  int size1 = ImageHeight(img1)*ImageWidth(img1);
-  int size2 = ImageHeight(img2)*ImageWidth(img2);
-  fprintf(f, "%d %d\n", size1, size2);
-  ImageLocateSubImage(img1, &x, &y ,img2);
-
+  
+//  int size1 = ImageHeight(img1)*ImageWidth(img1);
+  //int size2 = ImageHeight(img2)*ImageWidth(img2);
+  //fprintf(f, "%d \n", size1 );
+  
+   InstrReset(); 
+  // ImageLocateSubImage(img1, &x, &y ,img2);
   /// Filtering
 
-  //ImageBlur(img1, 18, 18 );
+  ImageBlur(img1, 18, 18 );
 
 //  if (ImageSave(img1, argv[2]) == 0) {
   //  error(2, errno, "%s: %s", argv[2], ImageErrMsg());
@@ -105,7 +106,7 @@ int main(int argc, char* argv[]) {
   InstrPrintFile(); // to print instrumentation to a file
   //InstrPrint(); // to print instrumentation
   ImageDestroy(&img1);
-  ImageDestroy(&img2);
+  //ImageDestroy(&img2);
   return 0;
 }
 

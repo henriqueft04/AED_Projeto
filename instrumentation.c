@@ -129,19 +129,11 @@ void InstrPrint(void) { ///
 
 
 void InstrPrintFile(void) { ///
-  FILE* f = fopen("./Data/worst_locate.txt", "a");
+  FILE* f = fopen("./Data/bad_blur.txt", "a");
   if (f == NULL) {
     fprintf(stderr, "Error opening file instr.txt\n");
     exit(1);
-  }
-
-  fseek(f, 0, SEEK_END);
-  long fileSize = ftell(f);  
-  if (fileSize == 0) {
-    
-    fprintf(f,"%10s %10s\n" ,"PIXMEM" ,"TIME"); 
-  }
-  fseek(f, 0, SEEK_SET);  
+  } 
 
   // elapsed time since last reset:
   double time = cpu_time() - InstrTime;
