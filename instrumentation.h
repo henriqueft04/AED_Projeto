@@ -49,6 +49,7 @@ void InstrCalibrate(void) ;
 void InstrReset(void) ;
 
 void InstrPrint(void) ;
+void InstrPrintFile(void) ;
 
 #endif
 
